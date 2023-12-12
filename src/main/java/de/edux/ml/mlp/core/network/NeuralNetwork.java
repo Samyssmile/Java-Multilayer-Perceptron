@@ -14,23 +14,19 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
 public class NeuralNetwork implements Serializable {
+    @Serial
     private static final long serialVersionUID = 1L;
     private static final Logger log = LoggerFactory.getLogger(NeuralNetwork.class);
-    private Engine engine;
+    private final Engine engine;
     private int epochs;
     private double initialLearningRate;
     private double finalLearningRate = 0.001;
     transient private double learningRate; // TODO rename to ETA ?
 
-    transient private Object lock = new Object();
     private int threads = 8;
 
     public NeuralNetwork(int batchSize) {
         engine = new Engine(batchSize);
-    }
-
-    public NeuralNetwork() {
-        this(0);
     }
 
     public void setLearningRates(double initialLearningRate, double finalLearningRate) {
@@ -38,24 +34,7 @@ public class NeuralNetwork implements Serializable {
         this.finalLearningRate = finalLearningRate;
     }
 
-    public void setThreads(int threads) {
-        this.threads = threads;
-    }
-
-    public void add(Transform transform, double... params) {
-        engine.add(transform, params);
-    }
-
-    public void addLayer(Layer layer) {
-        engine.addLayer(layer);
-    }
-
-    public void setEpochs(int epochs) {
-        this.epochs = epochs;
-    }
-
     public void fit(Loader trainLoader, Loader evalLoader) {
-
         learningRate = initialLearningRate;
         for (int epoch = 0; epoch < epochs; epoch++) {
             runEpochLayerBased(trainLoader, true);
@@ -64,7 +43,6 @@ public class NeuralNetwork implements Serializable {
                 runEpochLayerBased(evalLoader, false);
             }
 
-            System.out.println("");
             learningRate -= (initialLearningRate - finalLearningRate) / epochs;
         }
     }
@@ -77,15 +55,32 @@ public class NeuralNetwork implements Serializable {
 
         loader.close();
 
-/*        if (traingMode) {
+        if (traingMode) {
             engine.updateWeightsAndBias();
-        }*/
+        }
     }
 
-    public void setScaleInitialWeights(double scaleInitialWeights) {
-        this.engine.setScaleInitialWeights(scaleInitialWeights);
-    }
+    private Matrix runBatch(Loader loader, boolean trainingMode) {
+        MetaData metaData = loader.getMetaData();
+        BatchData batchData = loader.readBatch();
+        int itemsRead = metaData.getItemsRead();
+        int inputSize = metaData.getInputSize();
+        int expectedSize = metaData.getExpectedSize();
 
+        Matrix input = new Matrix(inputSize, itemsRead, batchData.getInputBatch());
+        Matrix expected = new Matrix(expectedSize, itemsRead, batchData.getExpectedBatch());
+
+        Matrix batchResult = engine.forwardLayerbased(input);
+
+        if (trainingMode) {
+            engine.backwardLayerBased(expected);
+        } else {
+            engine.evaluateLayerBased(batchResult, expected);
+        }
+
+        return batchResult;
+
+    }
 
     private synchronized void consumeBatchTasksLayerbased(LinkedList<Future<Matrix>> batches, boolean traingMode) {
         int numberBatches = batches.size();
@@ -99,7 +94,7 @@ public class NeuralNetwork implements Serializable {
                 e.printStackTrace();
             }
 
-            int printDot = numberBatches / 30;
+            int printDot = (numberBatches / 100) + 1;
             if (traingMode && index++ % printDot == 0) {
                 System.out.print(".");
             }
@@ -126,38 +121,15 @@ public class NeuralNetwork implements Serializable {
     }
 
 
-    private Matrix runBatch(Loader loader, boolean trainingMode) {
-        MetaData metaData = loader.getMetaData();
-        BatchData batchData = loader.readBatch();
-        int itemsRead = metaData.getItemsRead();
-        int inputSize = metaData.getInputSize();
-        int expectedSize = metaData.getExpectedSize();
-
-        Matrix input = new Matrix(inputSize, itemsRead, batchData.getInputBatch());
-        Matrix expected = new Matrix(expectedSize, itemsRead, batchData.getExpectedBatch());
-
-        Matrix batchResult = engine.forwardLayerbased(input);
-
-        if (trainingMode) {
-            engine.backwardLayerBased(expected);
-        } else {
-            engine.evaluateLayerBased(batchResult, expected);
-        }
-
-        return batchResult;
-
-    }
 
     @Override
     public String toString() {
-        StringBuilder sb = new StringBuilder();
-        sb.append(String.format("Epochs: %d\n", epochs));
-        sb.append(String.format("Initial learning rate: %f, Final learning rate: %f\n", initialLearningRate, finalLearningRate));
-        sb.append(String.format("Threads: %d\n", threads));
-        sb.append("\nEngine configuration:");
-        sb.append("\n----------------------------------------\n");
-        sb.append(engine.toString());
-        return sb.toString();
+        return String.format("Epochs: %d\n", epochs) +
+                String.format("Initial learning rate: %f, Final learning rate: %f\n", initialLearningRate, finalLearningRate) +
+                String.format("Threads: %d\n", threads) +
+                "\nEngine configuration:" +
+                "\n----------------------------------------\n" +
+                engine.toString();
     }
 
     public void setBatchSize(int batchSize) {
@@ -202,5 +174,16 @@ public class NeuralNetwork implements Serializable {
 
     public LinkedList<Double> getAccuracyHistory() {
         return engine.getAccuracyHistory();
+    }
+    public void setThreads(int threads) {
+        this.threads = threads;
+    }
+
+    public void addLayer(Layer layer) {
+        engine.addLayer(layer);
+    }
+
+    public void setEpochs(int epochs) {
+        this.epochs = epochs;
     }
 }

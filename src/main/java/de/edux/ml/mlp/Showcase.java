@@ -27,20 +27,17 @@ public class Showcase {
         trainLoader.close();
 
         NeuralNetwork nn = new NeuralNetwork(batchSize);
-        nn.addLayer(new DenseLayer(inputSize, 100));
+        nn.addLayer(new DenseLayer(inputSize, 30));
         nn.addLayer(new ReLuLayer());
-        nn.addLayer(new DenseLayer(100, 200));
-        nn.addLayer(new ReLuLayer());
-        nn.addLayer(new DenseLayer(200, outputSize));
+        nn.addLayer(new DenseLayer(30, outputSize));
         nn.addLayer(new SoftmaxLayer());
 
         int threads =1;
-        int epochs = 100;
+        int epochs = 10;
 
         nn.setThreads(threads);
         nn.setEpochs(epochs);
         nn.setLearningRates(0.05, 0.001);
-        nn.setScaleInitialWeights(0.2);
 
         System.out.println(nn);
         nn.fit(trainLoader, testLoader);

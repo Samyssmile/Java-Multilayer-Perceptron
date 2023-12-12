@@ -6,6 +6,7 @@ import java.util.LinkedList;
 
 public class BatchResult {
 
+    //Forward pass results
     private LinkedList<Matrix> io = new LinkedList<>();
     private LinkedList<Matrix> weightErrors = new LinkedList<>();
     private LinkedList<Matrix> weightInputs = new LinkedList<>();
@@ -26,7 +27,7 @@ public class BatchResult {
     }
 
     public void addIo(Matrix input) {
-        io.add(input);
+        io.add(input); //forwards
     }
 
     public Matrix getInputError() {

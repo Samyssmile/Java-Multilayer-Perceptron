@@ -22,6 +22,17 @@ public class Matrix implements Serializable {
         return sum;
     }
 
+    public Matrix divide(int batches) { //TODO replace with apply
+        if (batches == 0) {
+            throw new IllegalArgumentException("Division durch null ist nicht erlaubt.");
+        }
+
+        Matrix result = new Matrix(this.rows, this.cols);
+        for (int i = 0; i < this.data.length; i++) {
+            result.data[i] = this.data[i] / batches;
+        }
+        return result;
+    }
     /**
      * Subtracts the given matrix from this matrix.
      * <p>
@@ -94,6 +105,11 @@ public class Matrix implements Serializable {
         return this.apply((index, value) -> value * rate);
     }
 
+    public Matrix copy() {
+        Matrix result = new Matrix(rows, cols);
+        System.arraycopy(data, 0, result.data, 0, data.length);
+        return result;
+    }
 
 
     public interface RowColumnProducer {
