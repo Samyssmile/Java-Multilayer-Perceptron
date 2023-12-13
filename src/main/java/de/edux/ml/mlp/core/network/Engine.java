@@ -78,7 +78,7 @@ public class Engine implements Layer, Serializable {
 
     private void initAverageMetrics() {
         this.runningAverages = new RunningAverages(2, this.batchSize,(callNumber, averages) -> {
-            System.out.printf("Epoch: %d, Loss: %.2f, Accuracy: %.2f\n", callNumber, averages[0], averages[1]);
+            System.out.printf("Epoch: %d, Loss: %.2f, Accuracy: %.2f%%\n", callNumber, averages[0], averages[1]);
         });
     }
 

@@ -22,6 +22,18 @@ public class Matrix implements Serializable {
         return sum;
     }
 
+    public void accumulateGradient(Matrix gradient) {
+        // Überprüfen Sie, ob die Dimensionen übereinstimmen
+        if (this.rows != gradient.rows || this.cols != gradient.cols) {
+            throw new IllegalArgumentException("Dimensionen der Matrizen müssen übereinstimmen");
+        }
+
+        // Gradienten akkumulieren
+        for (int i = 0; i < this.data.length; i++) {
+            this.data[i] += gradient.data[i];
+        }
+    }
+
     public Matrix divide(int batches) { //TODO replace with apply
         if (batches == 0) {
             throw new IllegalArgumentException("Division durch null ist nicht erlaubt.");
@@ -109,6 +121,14 @@ public class Matrix implements Serializable {
         Matrix result = new Matrix(rows, cols);
         System.arraycopy(data, 0, result.data, 0, data.length);
         return result;
+    }
+
+    public void fill(int zero) {
+        Arrays.fill(data, zero);
+    }
+
+    public void fillZero() {
+        Arrays.fill(data, 0);
     }
 
 

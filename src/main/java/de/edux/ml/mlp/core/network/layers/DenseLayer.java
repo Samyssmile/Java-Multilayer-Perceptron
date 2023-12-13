@@ -1,26 +1,30 @@
 package de.edux.ml.mlp.core.network.layers;
-
 import de.edux.ml.mlp.core.network.Layer;
 import de.edux.ml.mlp.core.tensor.Matrix;
 import java.util.Random;
+import java.util.concurrent.ThreadLocalRandom;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 
 public class DenseLayer implements Layer {
   AtomicReference<Matrix> weights;
   AtomicReference<Matrix> bias;
 
-  private final float learningRate = 0.05f; // TODO make configurable
+  private float learningRate = 0.01f; // TODO make configurable
 
-  private final Random random = new Random();
-
+  private final ThreadLocalRandom random = ThreadLocalRandom.current();
+  private Matrix weightGradients;
+  private Matrix biasGradients;
   private Matrix lastInput;
 
-  private int gradientContributions = 0;
+  private AtomicInteger gradientAccumulations = new AtomicInteger(0);
 
 
   public DenseLayer(int inputSize, int outputSize) {
     weights = new AtomicReference<>(new Matrix(outputSize, inputSize));
     bias = new AtomicReference<>(new Matrix(outputSize, 1));
+    weightGradients = new Matrix(outputSize, inputSize);
+    biasGradients = new Matrix(outputSize, 1);
     initialize();
   }
 
@@ -37,6 +41,8 @@ public class DenseLayer implements Layer {
         bias.get().set(i, j, 0);
       }
     }
+
+
   }
 
   @Override
@@ -47,27 +53,25 @@ public class DenseLayer implements Layer {
 
   @Override
   public synchronized void updateWeightsAndBias() {
-    System.out.println(this.gradientContributions);
-    this.gradientContributions=0;
+    if (gradientAccumulations.get() > 0) {
+      float rate = learningRate/this.gradientAccumulations.get();
+      this.weights.set(this.weights.get().subtract(weightGradients.multiply(rate)));
+      this.bias.set(this.bias.get().subtract(biasGradients.multiply(rate )));
+
+      weightGradients.fill(0);
+      biasGradients.fill(0);
+      gradientAccumulations.set(0);
+    }
   }
 
   @Override
   public Matrix backwardLayerBased(Matrix error) {
+    gradientAccumulations.incrementAndGet();
     Matrix output = weights.get().transpose().multiply(error);
-    // Calculate gradient of weights
-    Matrix weightsGradient = error.multiply(lastInput.transpose());
-    // Calculate gradient of bias
-    Matrix biasGradient = error.averageColumn();
+    // Akkumulieren der Gradienten
+    weightGradients = weightGradients.add(error.multiply(lastInput.transpose()));
+    biasGradients = biasGradients.add(error.averageColumn());
 
-    float rate = learningRate / lastInput.getCols();
-
-    // Update weights and bias
-    this.weights.set(
-        weights.get().modify((index, value) -> value - rate * weightsGradient.get(index)));
-    this.bias.set(
-        bias.get().modify((row, col, value) -> value - learningRate * biasGradient.get(row)));
-
-    gradientContributions++;
     return output;
   }
 

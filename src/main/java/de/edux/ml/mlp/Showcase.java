@@ -27,13 +27,11 @@ public class Showcase {
         trainLoader.close();
 
         NeuralNetwork nn = new NeuralNetwork(batchSize);
-        nn.addLayer(new DenseLayer(inputSize, 30));
-        nn.addLayer(new ReLuLayer());
-        nn.addLayer(new DenseLayer(30, outputSize));
+        nn.addLayer(new DenseLayer(inputSize, outputSize));
         nn.addLayer(new SoftmaxLayer());
 
         int threads =1;
-        int epochs = 10;
+        int epochs = 30;
 
         nn.setThreads(threads);
         nn.setEpochs(epochs);
@@ -43,4 +41,6 @@ public class Showcase {
         nn.fit(trainLoader, testLoader);
         nn.saveModel("mnist-model.edux");
     }
+
+
 }
