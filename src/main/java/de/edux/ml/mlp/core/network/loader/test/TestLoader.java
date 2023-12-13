@@ -16,7 +16,8 @@ public class TestLoader implements Loader {
     private int totalItemsRead;
     private int itemsRead;
 
-    public TestLoader(int numberItems, int batchSize) {
+    public TestLoader(int numberItems, int batchSize, int inputRows) {
+        this.inputSize = inputRows;
         this.numberItems = numberItems;
         this.batchSize = batchSize;
         this.metaData = new TestMetaData();

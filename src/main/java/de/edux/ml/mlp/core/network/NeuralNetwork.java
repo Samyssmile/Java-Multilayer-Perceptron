@@ -17,9 +17,9 @@ public class NeuralNetwork implements Serializable {
   private static final Logger log = LoggerFactory.getLogger(NeuralNetwork.class);
   private final Engine engine;
   private int epochs;
-  private double initialLearningRate;
-  private double finalLearningRate = 0.001;
-  private transient double learningRate; // TODO rename to ETA ?
+  private float initialLearningRate;
+  private float finalLearningRate;
+  private transient float learningRate;
 
   private int threads = 8;
 
@@ -27,7 +27,7 @@ public class NeuralNetwork implements Serializable {
     engine = new Engine(batchSize);
   }
 
-  public void setLearningRates(double initialLearningRate, double finalLearningRate) {
+  public void setLearningRates(float initialLearningRate, float finalLearningRate) {
     this.initialLearningRate = initialLearningRate;
     this.finalLearningRate = finalLearningRate;
   }
@@ -72,7 +72,7 @@ public class NeuralNetwork implements Serializable {
     Matrix batchResult = engine.forwardLayerbased(input);
 
     if (trainingMode) {
-      engine.backwardLayerBased(expected);
+      engine.backwardLayerBased(expected, learningRate);
     } else {
       engine.evaluateLayerBased(batchResult, expected);
     }

@@ -9,8 +9,6 @@ public class DenseLayer implements Layer {
   AtomicReference<Matrix> weights;
   AtomicReference<Matrix> bias;
 
-  private final float learningRate = 0.05f; // TODO make configurable
-
   private final Random random = new Random();
 
   private Matrix lastInput;
@@ -44,10 +42,11 @@ public class DenseLayer implements Layer {
   }
 
   @Override
-  public synchronized void updateWeightsAndBias() {}
+  public synchronized void updateWeightsAndBias() {
+  }
 
   @Override
-  public Matrix backwardLayerBased(Matrix error) {
+  public Matrix backwardLayerBased(Matrix error, float learningRate) {
     Matrix output = weights.get().transpose().multiply(error);
     // Calculate gradient of weights
     Matrix weightsGradient = error.multiply(lastInput.transpose());

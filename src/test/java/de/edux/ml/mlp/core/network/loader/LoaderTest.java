@@ -11,7 +11,7 @@ class LoaderTest {
     @Test
     void shouldOpen() {
         var batchSize = 33;
-        Loader loader = new TestLoader(600, batchSize);
+        Loader loader = new TestLoader(600, batchSize, 33);
         MetaData metaData = loader.open();
 
         int numberItems = metaData.getNumberItems();

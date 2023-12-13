@@ -8,7 +8,7 @@ public class SoftmaxLayer implements Layer {
     private Matrix lastSoftmax;
 
     @Override
-    public Matrix backwardLayerBased(Matrix expected) {
+    public Matrix backwardLayerBased(Matrix expected, float learningRate) {
         return lastSoftmax.subtract(expected);
     }
 

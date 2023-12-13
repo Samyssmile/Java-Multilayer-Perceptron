@@ -51,6 +51,10 @@ public class NetworkBuilder {
   }
 
   public NeuralNetwork loadModel(String modelname) {
-    return NeuralNetwork.loadModel(modelname);
+    NeuralNetwork nn = NeuralNetwork.loadModel(modelname);
+    nn.setLearningRates(initialLearningRate, finalLearningRate);
+    nn.setEpochs(epochs);
+    nn.setThreads(threads);
+    return nn;
   }
 }

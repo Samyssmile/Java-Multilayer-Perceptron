@@ -20,7 +20,7 @@ public class ReLuLayer implements Layer {
     }
 
     @Override
-    public Matrix backwardLayerBased(Matrix error) {
+    public Matrix backwardLayerBased(Matrix error, float learningRate) {
         return error.reluDerivative(lastInput);
     }
 

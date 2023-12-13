@@ -7,7 +7,7 @@ import java.io.Serializable;
 
 public interface Layer extends Serializable {
 
-    Matrix backwardLayerBased(Matrix error);
+    Matrix backwardLayerBased(Matrix error, float learningRate);
 
     Matrix forwardLayerbased(Matrix input);
 

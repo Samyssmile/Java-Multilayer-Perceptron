@@ -11,7 +11,7 @@ import de.edux.ml.mlp.core.network.loader.MetaData;
 
 import java.io.File;
 
-public class Showcase {
+public class MNISTShowcase {
   public static void main(String[] args) {
     String trainImages = "mnist" + File.separator + "train-images.idx3-ubyte";
     String trainLabels = "mnist" + File.separator + "train-labels.idx1-ubyte";
@@ -21,7 +21,7 @@ public class Showcase {
     int batchSize = 100;
     int threads = 1;
     int epochs = 10;
-    float initialLearningRate = 0.01f;
+    float initialLearningRate = 0.1f;
     float finalLearningRate = 0.001f;
 
     Loader trainLoader = new ImageLoader(trainImages, trainLabels, batchSize);
@@ -34,19 +34,19 @@ public class Showcase {
 
     // Training from scratch
     new NetworkBuilder()
-        .addLayer(new DenseLayer(inputSize, 64))
+        .addLayer(new DenseLayer(inputSize, 32))
         .addLayer(new ReLuLayer())
-        .addLayer(new DenseLayer(64, outputSize))
+        .addLayer(new DenseLayer(32, outputSize))
         .addLayer(new SoftmaxLayer())
         .withBatchSize(batchSize)
         .withLearningRates(initialLearningRate, finalLearningRate)
-        .withThreads(1)
+        .withThreads(threads)
         .withEpochs(epochs)
         .build()
         .fit(trainLoader, testLoader)
-        .saveModel("model.edux");
+        .saveModel("model.edux"); //Save the model
 
     // Loading a model and continue training
-    NeuralNetwork nn = new NetworkBuilder().loadModel("model.edux").fit(trainLoader, testLoader);
+    NeuralNetwork nn = new NetworkBuilder().withEpochs(10).loadModel("model.edux").fit(trainLoader, testLoader);
   }
 }

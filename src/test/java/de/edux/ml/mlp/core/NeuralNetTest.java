@@ -78,7 +78,7 @@ public class NeuralNetTest {
 
 
         //Backward pass
-        Matrix calculatedError = engine.backwardLayerBased(expected);
+        Matrix calculatedError = engine.backwardLayerBased(expected, 0.01f);
         System.out.println("Approximated Error");
         System.out.println(approximatedError);
         System.out.println("Calculated Error");
