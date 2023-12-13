@@ -15,8 +15,6 @@ public class DenseLayer implements Layer {
 
   private Matrix lastInput;
 
-  private int gradientContributions = 0;
-
 
   public DenseLayer(int inputSize, int outputSize) {
     weights = new AtomicReference<>(new Matrix(outputSize, inputSize));
@@ -46,10 +44,7 @@ public class DenseLayer implements Layer {
   }
 
   @Override
-  public synchronized void updateWeightsAndBias() {
-    System.out.println(this.gradientContributions);
-    this.gradientContributions=0;
-  }
+  public synchronized void updateWeightsAndBias() {}
 
   @Override
   public Matrix backwardLayerBased(Matrix error) {
@@ -62,12 +57,9 @@ public class DenseLayer implements Layer {
     float rate = learningRate / lastInput.getCols();
 
     // Update weights and bias
-    this.weights.set(
-        weights.get().modify((index, value) -> value - rate * weightsGradient.get(index)));
-    this.bias.set(
-        bias.get().modify((row, col, value) -> value - learningRate * biasGradient.get(row)));
+    weights.set(weights.get().subtract(weightsGradient.multiply(rate)));
+    bias.set(bias.get().subtract(biasGradient.multiply(rate)));
 
-    gradientContributions++;
     return output;
   }
 
