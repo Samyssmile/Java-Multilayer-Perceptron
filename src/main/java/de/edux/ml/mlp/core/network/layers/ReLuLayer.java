@@ -1,6 +1,5 @@
 package de.edux.ml.mlp.core.network.layers;
 
-import de.edux.ml.mlp.core.network.BatchResult;
 import de.edux.ml.mlp.core.network.Layer;
 import de.edux.ml.mlp.core.tensor.Matrix;
 

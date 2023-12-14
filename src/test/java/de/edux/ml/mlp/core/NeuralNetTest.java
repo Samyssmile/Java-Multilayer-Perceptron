@@ -1,25 +1,17 @@
 package de.edux.ml.mlp.core;
 
-import de.edux.ml.mlp.core.network.BatchResult;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import de.edux.ml.mlp.core.network.Engine;
-import de.edux.ml.mlp.core.network.RunningAverages;
 import de.edux.ml.mlp.core.network.layers.DenseLayer;
 import de.edux.ml.mlp.core.network.layers.ReLuLayer;
 import de.edux.ml.mlp.core.network.layers.SoftmaxLayer;
 import de.edux.ml.mlp.core.network.loss.LossFunctions;
 import de.edux.ml.mlp.core.network.optimizer.Approximator;
 import de.edux.ml.mlp.core.tensor.Matrix;
-import de.edux.ml.mlp.core.transformer.Transform;
-import de.edux.ml.mlp.exceptions.UnsupportedLayerException;
 import de.edux.ml.mlp.util.Util;
-import org.junit.jupiter.api.Disabled;
-import org.junit.jupiter.api.RepeatedTest;
-import org.junit.jupiter.api.Test;
-
 import java.util.Random;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import org.junit.jupiter.api.Test;
 
 public class NeuralNetTest {
 
