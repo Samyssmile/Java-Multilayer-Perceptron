@@ -20,7 +20,7 @@ public class MNISTShowcase {
 
     int batchSize = 100;
     int threads = 1;
-    int epochs = 10;
+    int epochs = 20;
     float initialLearningRate = 0.1f;
     float finalLearningRate = 0.001f;
 
@@ -34,9 +34,9 @@ public class MNISTShowcase {
 
     // Training from scratch
     new NetworkBuilder()
-        .addLayer(new DenseLayer(inputSize, 32))
+        .addLayer(new DenseLayer(inputSize, 64))
         .addLayer(new ReLuLayer())
-        .addLayer(new DenseLayer(32, outputSize))
+        .addLayer(new DenseLayer(64, outputSize))
         .addLayer(new SoftmaxLayer())
         .withBatchSize(batchSize)
         .withLearningRates(initialLearningRate, finalLearningRate)
